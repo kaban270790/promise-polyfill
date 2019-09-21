@@ -3,7 +3,7 @@ const assert = require("assert");
 const {describe, it} = require("mocha");
 it("from description home work", () => {
 
-    let promise = new MyPromise(function (resolve){
+    let promise = new MyPromise(function (resolve) {
         resolve(42);
     });
 
@@ -14,7 +14,9 @@ it("from description home work", () => {
         })
         .then(function (value) {
             assert.strictEqual(43, value);
-            return new MyPromise(function (resolve) { resolve(137) })
+            return new MyPromise(function (resolve) {
+                resolve(137)
+            })
         })
         .then(function (value) {
             assert.strictEqual(137, value);
@@ -33,16 +35,16 @@ it("from description home work", () => {
             assert.strictEqual("ошибка обработана", value);
         })
 });
-describe("testing promise", () => {
+describe("testing promise then", () => {
     it("one then, resolve", () => {
-        (new MyPromise((resolve)=> {
+        (new MyPromise((resolve) => {
             resolve(1);
         })).then((value) => {
             assert.strictEqual(1, value);
         });
     });
     it("two then, resolve", () => {
-        (new MyPromise((resolve)=> {
+        (new MyPromise((resolve) => {
             resolve(1);
         })).then((value) => {
             assert.strictEqual(1, value);
@@ -52,7 +54,7 @@ describe("testing promise", () => {
         });
     });
     it("then return new promise", () => {
-        (new MyPromise((resolve)=> {
+        (new MyPromise((resolve) => {
             resolve(1);
         })).then((value) => {
             assert.strictEqual(1, value);
@@ -64,13 +66,49 @@ describe("testing promise", () => {
         });
     });
     it("rejected", () => {
-        (new MyPromise((resolve, rejected)=> {
+        (new MyPromise((resolve, rejected) => {
             rejected("error");
         })).then((value) => {
             assert.fail("false run");
             return ++value
         }, function (err) {
             assert.strictEqual("error", err);
+        });
+    });
+});
+describe("testing promise catch", () => {
+    it("reject from init promise, non then", () => {
+        (new MyPromise((resolve, rejected) => {
+            rejected("message");
+        })).catch((err) => {
+            assert.strictEqual("message", err);
+        });
+    });
+    it("reject from init promise, after then", () => {
+        (new MyPromise((resolve, rejected) => {
+            rejected("message");
+        })).then((value) => {
+            assert.fail("false run");
+        });
+    });
+    it("reject from init promise, before then", () => {
+        (new MyPromise((resolve, rejected) => {
+            rejected("message");
+        })).catch((err) => {
+            assert.strictEqual("message", err);
+            return "all good";
+        }).then((value) => {
+            assert.strictEqual("all good", value);
+        });
+    });
+    it("ignore catch", () => {
+        (new MyPromise((resolve, rejected) => {
+            resolve("ignore");
+        })).catch((err) => {
+            assert.fail("false run");
+            return "all good";
+        }).then((value) => {
+            assert.strictEqual("ignore", value);
         });
     });
 });

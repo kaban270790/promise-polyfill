@@ -141,6 +141,13 @@
         return promise;
     };
     /**
+     * @param {Function} userRejected
+     * @returns {MyPromise}
+     */
+    MyPromise.prototype.catch = function (userRejected) {
+        return this.then(null, userRejected);
+    };
+    /**
      *
      * @param {Function} fn
      * @param {MyPromise} promise
